@@ -26,20 +26,17 @@ public class NametagHud extends AbstractCommonModule {
 
     @Override
     public void init() {
-        // Add all settings to our new category
         category.add(enabled);
         category.add(showCustomTag);
         category.add(customTagText);
         category.add(customTagColor);
         category.add(tagPosition);
         
-        // Add the "Nametag" category to the main config screen
         client.getConfig().addCategory(category);
     }
 
     public enum TagPosition {
         LEFT, RIGHT;
-        // This makes the option display nicely in the settings menu
         @Override public String toString() { return "nametag.position." + super.toString().toLowerCase(Locale.ROOT); }
     }
 }
