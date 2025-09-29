@@ -43,8 +43,16 @@
 	"modules.itzclient.reachhud": "Reach Display HUD",
 	"modules.itzclient.pinghud": "Ping HUD",
 	"modules.itzclient.iconhud": "Client Icon HUD",
-
+    "category.itzclient.nametag": "Nametag",
+	
 	"options.itzclient.rendering.fullBright": "Fullbright",
+    "options.itzclient.nametag.enabled": "Enable Custom Nametags",
+    "options.itzclient.nametag.showCustomTag": "Show Custom Tag",
+    "options.itzclient.nametag.customTagText": "Tag Text",
+    "options.itzclient.nametag.customTagColor": "Tag Color",
+    "options.itzclient.nametag.tagPosition": "Tag Position",
+    "nametag.position.left": "Left",
+    "nametag.position.right": "Right",
     
     "players": "Players",
     "blocks": "blocks"
