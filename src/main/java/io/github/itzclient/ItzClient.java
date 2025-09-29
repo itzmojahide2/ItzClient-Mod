@@ -11,6 +11,7 @@ import io.github.itzclient.modules.auth.Auth;
 import io.github.itzclient.modules.blur.MotionBlur;
 import io.github.itzclient.modules.freelook.Freelook;
 import io.github.itzclient.modules.hud.HudManager;
+import io.github.itzclient.modules.hud.NametagHud;
 import io.github.itzclient.modules.hud.gui.hud.KeystrokesHud;
 import io.github.itzclient.modules.hud.gui.hud.simple.TargetHud;
 import io.github.itzclient.modules.hypixel.HypixelMods;
@@ -39,7 +40,7 @@ public class ItzClient extends ItzClientCommon implements ClientModInitializer {
     public static final Logger LOGGER = new LoggerImpl();
 
     private void addBuiltinModules() {
-        // --- Original Axolotl Modules, now part of ItzClient ---
+        // --- Original Axolotl Modules ---
         registerModule(Zoom.getInstance());
         registerModule(HudManager.getInstance());
         registerModule(HypixelMods.getInstance());
@@ -55,9 +56,10 @@ public class ItzClient extends ItzClientCommon implements ClientModInitializer {
         registerModule(Auth.getInstance());
         registerModule(APIOptions.getInstance());
 
-        // --- New Modules Added for ItzClient ---
+        // --- New ItzClient Modules ---
         registerModule(new TargetHud());
         registerModule(new KeystrokesHud());
+        registerModule(NametagHud.getInstance());
     }
 
     private void addExternalModules() {
