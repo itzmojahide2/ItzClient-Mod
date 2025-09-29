@@ -1,1 +1,44 @@
+{
+	"schemaVersion": 1,
+	"id": "itzclient",
+	"version": "${version}",
+	"name": "ItzClient",
+	"description": "A clean, high-performance client for PvP and other Scenarios.",
+	"authors": [ "itzmojahide2" ],
+	"contact": { "sources": "https://github.com/itzmojahide2/ItzClient-Mod/" },
+	"license": "LGPL-3.0-or-later",
+	"icon": "assets/itzclient/icon.png",
+	"accessWidener": "itzclient.accesswidener",
+	"environment": "client",
+	"entrypoints": {
+		"client": [ "io.github.itzclient.ItzClient" ],
+		"modmenu": [ "io.github.itzclient.config.modmenu.ModMenuCompat" ]
+	},
+	"mixins": [ "itzclient.mixins.json" ],
+	"depends": {
+		"fabricloader": ">=0.17.0",
+		"minecraft": ">=1.21 <=1.21.1",
+		"fabric-api": "*",
+		"axolotlclientconfig": "*",
+		"itzclient-common": "*"
+	}
+}
+```--- END OF FILE ---
 
+#### **`itzclient.mixins.json` (The List of Modifications)**
+**Location:** `src/main/resources/itzclient.mixins.json`
+--- START OF FILE ---
+```json
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "io.github.itzclient.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "GameMenuScreenMixin",
+    "TitleScreenMixin",
+    "AddServerScreenMixin", "BeaconBlockEntityRendererMixin", "BossBarHudAccessor", "BossBarHudMixin", "BuiltinModelItemRendererMixin", "CameraMixin", "ChatHudMixin", "ClientBrandRetrieverMixin", "ClientPlayerEntityMixin", "ClientPlayNetworkHandlerMixin", "ClientWorldMixin", "DebugHudMixin", "DownloadingTerrainScreenMixin", "EmitterParticleMixin", "EntityMixin", "EntityRendererMixin", "GameOptionsMixin", "GameRendererMixin", "GuiGraphicsMixin", "HandledScreenMixin", "InGameHudMixin", "InGameOverlayRendererMixin", "ItemEntityRendererMixin", "KeyBindAccessor", "KeyBindMixin", "KeyboardInputMixin", "LightmapManagerMixin", "LivingEntityMixin", "LivingEntityRendererMixin", "MinecraftClientAccessor", "MinecraftClientMainMixin", "MinecraftClientMixin", "MinecraftServerAccessor", "ModStatusMixin", "MouseMixin", "OverlayTextureAccessor", "OverlayTextureMixin", "ParticleAccessor", "ParticleManagerMixin", "PlayerEntityMixin", "PlayerEntityRendererMixin", "PlayerListEntryMixin", "PlayerListHudMixin", "ReloadableResourceManagerMixin", "RenderSystemMixin", "ScreenMixin", "ScreenshotRecorderMixin", "ShaderEffectAccessor", "SplashOverlayMixin", "SplashTextResourceSupplierMixin", "TntEntityRendererMixin", "WorldListWidgetEntryMixin", "WorldRendererAccessor", "WorldRendererMixin", "api.JoinMulitplayerScreenMixin", "translation.TranslationStorageMixin"
+  ],
+  "injectors": { "defaultRequire": 1 },
+  "mixinextras": { "minVersion": "0.5.0" }
+}
