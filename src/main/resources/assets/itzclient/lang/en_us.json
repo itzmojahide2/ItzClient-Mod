@@ -42,7 +42,8 @@
     "modules.itzclient.packdisplayhud": "Pack Display HUD",
 	"modules.itzclient.reachhud": "Reach Display HUD",
 	"modules.itzclient.pinghud": "Ping HUD",
-	
+	"modules.itzclient.iconhud": "Client Icon HUD",
+
 	"options.itzclient.rendering.fullBright": "Fullbright",
     
     "players": "Players",
