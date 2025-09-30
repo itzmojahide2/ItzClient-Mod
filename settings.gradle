@@ -1,12 +1,38 @@
 pluginManagement {
-    repositories {
-        gradlePluginPortal()
-        maven("https://maven.neoforged.net/releases")
-    }
+	repositories {
+		maven {
+			name = 'Fabric'
+			url = 'https://maven.fabricmc.net/'
+		}
+		maven {
+			name = 'Ornithe'
+			url = 'https://maven.ornithemc.net/releases'
+		}
+		gradlePluginPortal()
+	}
 }
 
-plugins {
-    id("org.gradle.toolchains.foojay-resolver-convention") version("0.8.0")
+// This is a helper function to check the gradle.properties file
+boolean checkProp(String property) {
+	String value = getProperties().get("axolotlclient.modules." + property)
+	return !(value == null || value.isEmpty() || value == "false" || value == "f")
 }
 
-rootProject.name = "ItzClient-Mod"
+// This function includes a project folder only if the corresponding property is true
+void optional(String project) {
+	if (checkProp(project) || checkProp("all")) {
+		System.out.println("Adding " + project)
+		include project
+	}
+}
+
+// This line is essential. It includes the 'common' folder as a project.
+include 'common'
+
+System.out.println("Adding submodules..")
+
+// This checks gradle.properties for "axolotlclient.modules.all=true" or "axolotlclient.modules.1.21=true"
+// and then includes the '1.21' folder as a project.
+// NOTE: Even though the property is 'axolotlclient', it works for ItzClient because
+// we did not change the property names themselves, just their values. This is fine.
+optional '1.21'
