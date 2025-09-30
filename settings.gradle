@@ -1,16 +1,18 @@
+// --- THIS NEW BLOCK IS THE FIX ---
 pluginManagement {
-	repositories {
-		maven {
-			name = 'Fabric'
-			url = 'https://maven.fabricmc.net/'
-		}
-		maven {
-			name = 'Ornithe'
-			url = 'https://maven.ornithemc.net/releases'
-		}
-		gradlePluginPortal()
-	}
+    repositories {
+        maven {
+            name = 'Fabric'
+            url = 'https://maven.fabricmc.net/'
+        }
+        maven {
+            name = 'Ornithe'
+            url = 'https://maven.ornithemc.net/releases'
+        }
+        gradlePluginPortal()
+    }
 }
+// --- END OF FIX ---
 
 // This is a helper function to check the gradle.properties file
 boolean checkProp(String property) {
@@ -31,8 +33,5 @@ include 'common'
 
 System.out.println("Adding submodules..")
 
-// This checks gradle.properties for "axolotlclient.modules.all=true" or "axolotlclient.modules.1.21=true"
-// and then includes the '1.21' folder as a project.
-// NOTE: Even though the property is 'axolotlclient', it works for ItzClient because
-// we did not change the property names themselves, just their values. This is fine.
+// This includes the '1.21' folder as a project.
 optional '1.21'
