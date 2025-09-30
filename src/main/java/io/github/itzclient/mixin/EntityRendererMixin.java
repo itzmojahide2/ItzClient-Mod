@@ -1,9 +1,11 @@
 package io.github.itzclient.mixin;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.itzclient.modules.hud.NametagHud;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -32,7 +34,7 @@ public abstract class EntityRendererMixin<T extends Entity> {
             target = "Lnet/minecraft/client/font/TextRenderer;draw(Lnet/minecraft/text/Text;FFIZLorg/joml/Matrix4f;Lnet/minecraft/client/render/VertexConsumerProvider;Lnet/minecraft/client/font/TextRenderer$TextLayerType;II)I"
         ),
         cancellable = true,
-        locals = LocalCapture.CAPTURE-FAILEXCEPTION
+        locals = LocalCapture.CAPTURE_FAILEXCEPTION
     )
     private void itzclient$renderCustomNametag(T entity, Text text, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo ci,
                                                double d, int y, Matrix4f matrix4f) {
@@ -41,7 +43,6 @@ public abstract class EntityRendererMixin<T extends Entity> {
         if (nametagModule.enabled.get()) {
             TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
             
-            MutableText fullText = Text.empty();
             String tagString = nametagModule.customTagText.get();
             Text customTag = Text.literal(tagString).styled(style -> style.withColor(nametagModule.customTagColor.get().toInt()));
             
@@ -77,7 +78,16 @@ public abstract class EntityRendererMixin<T extends Entity> {
             if (nametagModule.showCustomTag.get()) {
                 GuiGraphics graphics = new GuiGraphics(MinecraftClient.getInstance(), vertexConsumers.getBuffer(RenderLayer.getText()));
                 graphics.setMatrices(matrices);
+
+                RenderSystem.enableBlend();
+                RenderSystem.setShaderTexture(0, ITZ_TAG_ICON);
+                RenderSystem.texParameteri(3553, 10241, 9728); // GL_NEAREST for sharp scaling
+                RenderSystem.texParameteri(3553, 10240, 9728);
+                
                 graphics.drawTexture(ITZ_TAG_ICON, (int)iconX, -1, 0, 0, iconSize, iconSize, iconSize, iconSize);
+
+                RenderSystem.texParameteri(3553, 10241, 9729); // Restore default GL_LINEAR
+                RenderSystem.texParameteri(3553, 10240, 9729);
             }
             
             textRenderer.draw(nameAndTag, textX, 0.0f, 0x20FFFFFF, false, matrix4f, vertexConsumers, TextRenderer.TextLayerType.SEE_THROUGH, 0, light);
