@@ -5,7 +5,6 @@ import com.mojang.blaze3d.texture.NativeImage;
 import io.github.itzclient.ItzClientCommon;
 import io.github.itzclient.AxolotlClientConfig.api.options.Option;
 import io.github.itzclient.AxolotlClientConfig.api.options.OptionCategory;
-import io.github.itzclient.AxolotlClientConfig.api.ui.ConfigUI;
 import io.github.itzclient.AxolotlClientConfig.api.util.Color;
 import io.github.itzclient.AxolotlClientConfig.impl.options.*;
 import io.github.itzclient.config.screen.CreditsScreen;
@@ -45,11 +44,7 @@ public class ItzClientConfig extends ItzClientConfigCommon {
                 color = (color << 8) + value.getBlue();
                 color = (color << 8) + value.getGreen();
                 color = (color << 8) + value.getRed();
-                for (int i = 0; i < 8; ++i) {
-                    for (int j = 0; j < 8; ++j) {
-                        nativeImage.setPixelColor(j, i, color);
-                    }
-                }
+                for (int i = 0; i < 8; ++i) { for (int j = 0; j < 8; ++j) { nativeImage.setPixelColor(j, i, color); } }
                 RenderSystem.activeTexture(33985);
                 texture.bindTexture();
                 nativeImage.upload(0, 0, 0, 0, 0, nativeImage.getWidth(), nativeImage.getHeight(), false, true, false, false);
@@ -61,11 +56,14 @@ public class ItzClientConfig extends ItzClientConfigCommon {
     public final BooleanOption noHurtCam = new BooleanOption("noHurtCam", false);
     public final BooleanOption flatItems = new BooleanOption("flatItems", false);
     public final BooleanOption noRain = new BooleanOption("noRain", false);
+    public final BooleanOption showBrandingWatermark = new BooleanOption("showBrandingWatermark", true);
 
+    // --- Universal HUD Settings ---
     public final OptionCategory hudSettings = OptionCategory.create("hudSettings");
     public final IntegerOption hudCornerRadius = new IntegerOption("hudCornerRadius", 0, 0, 10);
     public final IntegerOption hudBackgroundOpacity = new IntegerOption("hudBackgroundOpacity", 100, 0, 255);
 
+    // --- Categories ---
     public final OptionCategory general = OptionCategory.create("general");
     public final OptionCategory rendering = OptionCategory.create("rendering");
     public final OptionCategory outlines = OptionCategory.create("blockOutlines");
@@ -81,6 +79,7 @@ public class ItzClientConfig extends ItzClientConfigCommon {
         rendering.add(outlines);
         rendering.add(timeChanger);
 
+        general.add(showBrandingWatermark);
         general.add(new GenericOption("profiles.title", "profiles.configure", () -> MinecraftClient.getInstance().setScreen(new ProfilesScreen(MinecraftClient.getInstance().currentScreen))), false);
         
         hudSettings.add(hudCornerRadius);
