@@ -24,16 +24,24 @@ import io.github.itzclient.modules.tablist.Tablist;
 import io.github.itzclient.modules.tnttime.TntTime;
 import io.github.itzclient.modules.zoom.Zoom;
 import io.github.itzclient.util.FeatureDisabler;
+import io.github.itzclient.util.ItzUserManager;
 import io.github.itzclient.util.Logger;
 import io.github.itzclient.util.LoggerImpl;
 import io.github.itzclient.util.notifications.Notifications;
+import io.netty.buffer.Unpooled;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.resource.Resource;
 import net.minecraft.util.Identifier;
 
 import java.util.HashMap;
 
 public class ItzClient extends ItzClientCommon implements ClientModInitializer {
+
+    // Unique channel for detecting other ItzClient users
+    public static final Identifier ITZ_CLIENT_CHANNEL = Identifier.of("itzclient", "user_channel");
 
     public static final HashMap<Identifier, Resource> runtimeResources = new HashMap<>();
     public static final Identifier badgeIcon = Identifier.of(MODID, "textures/badge.png");
@@ -71,12 +79,40 @@ public class ItzClient extends ItzClientCommon implements ClientModInitializer {
         Bridge.init();
         addBuiltinModules();
         addExternalModules();
-
         init(LOGGER, Notifications.getInstance());
         new API(new StatusUpdateProviderImpl(), APIOptions.getInstance());
+        
+        initializeNetworking();
 
         LOGGER.debug("Debug Output enabled, Logs will be quite verbose!");
         LOGGER.info("ItzClient Initialized");
+    }
+
+    private void initializeNetworking() {
+        // When we join a server, announce our presence.
+        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
+            ItzUserManager.clear();
+            PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+            // A more advanced system would write the player's UUID to the buffer here.
+            ClientPlayNetworking.send(ITZ_CLIENT_CHANNEL, buf);
+            if (client.player != null) {
+                ItzUserManager.addUser(client.player.getUuid());
+            }
+        });
+
+        // When we receive an announcement from another player.
+        // NOTE: This basic implementation is for demonstration. A robust system
+        // would require the server to forward the sender's UUID. We will simulate
+        // this for now on the client-side for visual purposes.
+        ClientPlayNetworking.registerGlobalReceiver(ITZ_CLIENT_CHANNEL, (client, handler, buf, responseSender) -> {
+            // In a real scenario, you would read the sender's UUID from the buffer 'buf'.
+            // For now, this is a placeholder to show where the logic would go.
+        });
+
+        // When we disconnect, clear the list of users.
+        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
+            ItzUserManager.clear();
+        });
     }
 
     @Override
