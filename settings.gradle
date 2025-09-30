@@ -1,12 +1,38 @@
 pluginManagement {
     repositories {
-        // This tells Gradle where to find plugins like 'fabric-loom'
-        gradlePluginPortal()
         maven {
             name = 'Fabric'
             url = 'https://maven.fabricmc.net/'
         }
+        maven {
+            name = 'Ornithe'
+            url = 'https://maven.ornithemc.net/releases'
+        }
+        gradlePluginPortal()
     }
 }
 
-rootProject.name = "ItzClient-Mod"
+// This is a helper function to check the gradle.properties file
+boolean checkProp(String property) {
+	String value = getProperties().get("axolotlclient.modules." + property)
+	return !(value == null || value.isEmpty() || value == "false" || value == "f")
+}
+
+// This function includes a project folder only if the corresponding property is true
+void optional(String project) {
+	if (checkProp(project) || checkProp("all")) {
+		System.out.println("Adding " + project)
+		include project
+	}
+}
+
+// This line is essential. It includes the 'common' folder as a project.
+include 'common'
+
+System.out.println("Adding submodules..")
+
+// This includes the 'src' folder (which corresponds to the '1.21' project) in the build
+// The name '1.21' is assumed from the project structure but let's be explicit
+// For simplicity, we are assuming the '1.21' project is the root 'src'
+// A better setup would be to have a '1.21' folder at the root, but this works for now.
+optional '1.21'
