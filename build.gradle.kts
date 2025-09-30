@@ -1,66 +1,69 @@
 plugins {
-    id("net.neoforged.gradle") version "7.0.142"
-    kotlin("jvm") version "1.9.23" // Use a modern Kotlin version
+	id("fabric-loom")
+	id("io.github.p03w.machete")
 }
 
-val mod_id: String by project
-val mod_version: String by project
+group = project.property("maven_group") as String
+version = "${project.property("version")}+${project.property("minecraft_121")}"
+base.archivesName.set(project.property("archives_base_name") as String)
 
-base {
-    archivesName.set(mod_id)
-}
-
-// NeoForgeGradle config
-neoForge {
-    version = project.property("minecraft_version") as String
-
-    runs {
-        create("client") {
-            // Comma-separate mod IDs to run in the client.
-            // mods("examplemod", "anothermod")
-            mods(mod_id)
-        }
-
-        create("server") {
-            // Comma-separate mod IDs to run in the server.
-            // mods("examplemod", "anothermod")
-            mods(mod_id)
-
-            // Example of setting a game argument
-            // arg("--nogui")
-        }
-
-        // Example data run.
-        // Runs may be duplicated and customized in any way.
-        // create("data") {
-        //    mods(mod_id)
-        //
-        //    // Example of setting a program argument
-        //    // arg("--all")
-        // }
-    }
-}
-
-sourceSets.main.get().resources {
-    srcDir("src/generated/resources")
-}
-
-repositories {
-    // Add any additional repositories here if needed
+loom {
+	accessWidenerPath.set(file("src/main/resources/itzclient.accesswidener"))
+	mods {
+		create("itzclient") {
+			sourceSet("main")
+		}
+		create("itzclient-test") {
+			sourceSet("test")
+		}
+	}
 }
 
 dependencies {
-    // The NeoForge dependency is now handled automatically by the plugin.
-    // implementation("net.neoforged:neoforge:${project.property("neoforge_version")}")
+	minecraft("com.mojang:minecraft:${project.property("minecraft_121")}")
+	mappings("org.quiltmc:quilt-mappings:${project.property("mappings_121")}:intermediary-v2")
+
+	modImplementation("net.fabricmc:fabric-loader:${project.property("fabric_loader")}")
+	modImplementation("net.fabricmc.fabric-api:fabric-api:${project.property("fapi_121")}+${project.property("minecraft_121")}")
+
+	modImplementation("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+${project.property("minecraft_121")}") {
+		exclude(group = "com.terraformersmc")
+		exclude(group = "org.lwjgl")
+	}
+	include("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+${project.property("minecraft_121")}")
+	modImplementation("io.github.axolotlclient.AxolotlClient-config:AxolotlClientConfig-common:${project.property("config")}")
+
+	modCompileOnlyApi("com.terraformersmc:modmenu:8.0.0") {
+		exclude(group = "net.fabricmc")
+	}
+
+	implementation(include(project(path = ":common", configuration = "shadow"))!!)
+
+	api("org.lwjgl:lwjgl-nanovg:3.3.3")
+	runtimeOnly("org.lwjgl:lwjgl-nanovg:3.3.3:natives-linux")
+	runtimeOnly("org.lwjgl:lwjgl-nanovg:3.3.3:natives-windows")
+	runtimeOnly("org.lwjgl:lwjgl-nanovg:3.3.3:natives-macos")
+
+	modCompileOnly("maven.modrinth:world-host:0.5.0+1.21.1-fabric")
+	modCompileOnly("link.e4mc:e4mc_minecraft-fabric:5.3.1")
+
+	implementation("net.hypixel:mod-api:1.0.1")
+	include(modImplementation("maven.modrinth:hypixel-mod-api:1.0.1+build.1+mc1.21")!!)
 }
 
-// Apply the Kotlin plugin and configure its options.
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions.jvmTarget = "21"
+tasks.processResources {
+	inputs.property("version", project.version)
+	filesMatching("fabric.mod.json") {
+		expand(mapOf("version" to project.version))
+	}
 }
 
 tasks.withType<JavaCompile> {
-    options.encoding = "UTF-8"
-    // Set the Java language version for compilation.
-    options.release.set(21)
+	options.encoding = "UTF-8"
+	options.release.set(21)
+}
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
 }
