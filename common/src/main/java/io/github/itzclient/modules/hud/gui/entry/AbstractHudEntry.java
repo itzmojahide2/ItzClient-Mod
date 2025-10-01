@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-01301, USA.
  *
  * For more information, see the LICENSE file.
  */
@@ -25,6 +25,7 @@ import io.github.itzclient.AxolotlClientConfig.api.options.Option;
 import io.github.itzclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.itzclient.AxolotlClientConfig.impl.options.DoubleOption;
 import io.github.itzclient.bridge.AxoMinecraftClient;
+import io.github.itzclient.bridge.render.AxoRenderContext;
 import io.github.itzclient.bridge.render.AxoWindow;
 import io.github.itzclient.modules.hud.gui.component.HudEntry;
 import io.github.itzclient.modules.hud.util.DefaultOptions;
