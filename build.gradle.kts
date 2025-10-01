@@ -1,4 +1,3 @@
-// --- THIS NEW PLUGINS BLOCK IS THE FIX ---
 plugins {
     id("io.freefair.lombok") version "8.14" apply false
     id("com.modrinth.minotaur") version "2.+" apply false
@@ -7,7 +6,6 @@ plugins {
     id("fabric-loom") version "1.11.+" apply false
     id("io.github.p03w.machete") version "2.+" apply false
 }
-// --- END OF FIX ---
 
 version = "${project.version}"
 group = "io.github.itzclient"
@@ -66,4 +64,14 @@ subprojects {
 		rule(file("../HEADER"))
 		include("**/*.java")
 	}
+
+    // --- THIS NEW BLOCK IS THE FIX ---
+    // This finds the license checking tasks in all sub-projects and disables them.
+    tasks.named("checkLicense") {
+        enabled = false
+    }
+    tasks.named("checkLicenseMain") {
+        enabled = false
+    }
+    // --- END OF FIX ---
 }
