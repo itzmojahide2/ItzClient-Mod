@@ -19,11 +19,7 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      # This is the corrected command that will automatically fix all 49 files.
-      - name: Apply License Header
-        run: ./gradlew licenseFormat
-
-      # The build command will now run after the licenses are fixed.
+      # The license check will happen inside this build step.
       - name: Build with Gradle
         run: ./gradlew build
 
