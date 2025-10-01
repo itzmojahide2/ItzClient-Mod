@@ -37,7 +37,6 @@ public class NametagHud extends AbstractCommonModule {
     @Getter
     private static final NametagHud instance = new NametagHud();
     
-    // --- Settings for this module ---
     public final OptionCategory category = OptionCategory.create("nametag");
     public final BooleanOption enabled = new BooleanOption("enabled", true);
     public final BooleanOption showCustomTag = new BooleanOption("showCustomTag", true);
