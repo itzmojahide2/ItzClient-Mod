@@ -21,6 +21,7 @@
  */
 package io.github.itzclient.modules.hud;
 
+import com.google.gson.stream.JsonWriter;
 import io.github.itzclient.ItzClientCommon;
 import io.github.itzclient.AxolotlClientConfig.api.options.Option;
 import io.github.itzclient.AxolotlClientConfig.api.options.OptionCategory;
@@ -56,7 +57,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.stream.Collectors;
-import com.google.gson.stream.JsonWriter;
 
 public abstract class HudManagerCommon extends AbstractCommonModule implements ProfileAware {
     @Getter
@@ -79,7 +79,6 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
         toggleHud.br$registerOnConsumeClick(enabled::toggle);
         Platform.getConfig().addCategory(hudCategory);
         hudCategory.add(enabled);
-
         add(new PingHud());
         add(new FPSHud());
         add(new CPSHud());
@@ -102,15 +101,11 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
         add(new MouseMovementHud());
         add(new DayCounterHud());
         add(new InventoryHud());
-
         addExtraHud();
-
         addNonConfigured(BedwarsMod.getInstance().getUpgradesOverlay());
         addNonConfigured(BedwarsMod.getInstance().getResourceOverlay());
         addNonConfigured(BedwarsMod.getInstance().getStatsOverlay());
-
         entries.values().forEach(HudEntry::init);
-
         hudCategory.add(new GenericOption("hud.custom_entry", "hud.custom_entry.add", () -> {
             CustomHudEntry entry = new CustomHudEntry();
             entry.setEnabled(true);
@@ -121,7 +116,6 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
             client.br$reinitScreen();
             saveCustomEntries();
         }));
-
         Events.CLIENT_START.register(this::loadCustomEntries);
         Events.CLIENT_STOP.register(this::saveCustomEntries);
     }
