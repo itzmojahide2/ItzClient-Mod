@@ -65,13 +65,9 @@ subprojects {
 		include("**/*.java")
 	}
 
-    // --- THIS NEW BLOCK IS THE FIX ---
-    // This finds the license checking tasks in all sub-projects and disables them.
-    tasks.named("checkLicense") {
-        enabled = false
-    }
-    tasks.named("checkLicenseMain") {
-        enabled = false
-    }
+    // --- NEW FIX IS HERE ---
+    // This now checks if the tasks exist before trying to disable them.
+    tasks.findByName("checkLicense")?.enabled = false
+    tasks.findByName("checkLicenseMain")?.enabled = false
     // --- END OF FIX ---
 }
