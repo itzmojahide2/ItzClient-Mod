@@ -33,6 +33,7 @@ import io.github.itzclient.modules.hud.gui.layout.AnchorPoint;
 import io.github.itzclient.modules.hud.gui.layout.Justification;
 import io.github.itzclient.modules.hud.util.DefaultOptions;
 import io.github.itzclient.modules.hud.util.DrawPosition;
+
 import java.util.List;
 
 public abstract class SimpleTextHudEntry extends TextHudEntry implements DynamicallyPositionable {
@@ -60,12 +61,22 @@ public abstract class SimpleTextHudEntry extends TextHudEntry implements Dynamic
         int elementHeight = client.br$getFont().br$getFontHeight() + 4;
         boolean boundsChanged = false;
         int minW = minWidth.get();
-        if (elementWidth < minW) { if (width != minW) { setWidth(minW); boundsChanged = true; }
-        } else if (elementWidth != width) { setWidth(elementWidth); boundsChanged = true; }
+        if (elementWidth < minW) {
+            if (width != minW) { setWidth(minW); boundsChanged = true; }
+        } else if (elementWidth != width) {
+            setWidth(elementWidth);
+            boundsChanged = true;
+        }
         int minH = minHeight.get();
-        if (elementHeight < minH) { if (height != minH) { setHeight(minH); boundsChanged = true; }
-        } else if (elementHeight != height) { setHeight(elementHeight); boundsChanged = true; }
-        if (boundsChanged) { onBoundsUpdate(); }
+        if (elementHeight < minH) {
+            if (height != minH) { setHeight(minH); boundsChanged = true; }
+        } else if (elementHeight != height) {
+            setHeight(elementHeight);
+            boundsChanged = true;
+        }
+        if (boundsChanged) {
+            onBoundsUpdate();
+        }
         render.br$drawString(value, pos.x() + justification.get().getXOffset(valueWidth, getWidth() - 4) + 2, pos.y() + (Math.round((float) getHeight() / 2)) - 4, getTextColor().toInt(), shadow.get());
     }
 
@@ -96,5 +107,7 @@ public abstract class SimpleTextHudEntry extends TextHudEntry implements Dynamic
     }
 
     @Override
-    public AnchorPoint getAnchor() { return anchor.get(); }
+    public AnchorPoint getAnchor() {
+        return anchor.get();
+    }
 }
