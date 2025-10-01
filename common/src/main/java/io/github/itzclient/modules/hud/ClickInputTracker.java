@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-01301, USA.
  *
  * For more information, see the LICENSE file.
  */
@@ -58,7 +58,6 @@ public class ClickInputTracker extends AbstractCommonModule {
 
     @Override
     public void tick() {
-        // Update all lists every tick to remove old clicks
         leftMouse.update();
         leftBind.update();
         rightMouse.update();
@@ -73,8 +72,7 @@ public class ClickInputTracker extends AbstractCommonModule {
         }
 
         public void update() {
-            // Remove any clicks that are older than 1 second (1000 milliseconds)
-            clicks.removeIf((clickTime) -> Platform.getMeasuringTimeMs() - clickTime > 1000);
+            clicks.removeIf((click) -> Platform.getMeasuringTimeMs() - click > 1000);
         }
 
         public void click() {
