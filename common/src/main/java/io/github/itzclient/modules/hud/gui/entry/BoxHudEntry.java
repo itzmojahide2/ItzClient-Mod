@@ -44,12 +44,6 @@ public abstract class BoxHudEntry extends AbstractHudEntry {
     public BoxHudEntry(int width, int height, boolean backgroundAllowed) {
         super(width, height);
         this.backgroundAllowed = backgroundAllowed;
-        if (!backgroundAllowed) {
-            background = null;
-            backgroundColor = null;
-            outline = null;
-            outlineColor = null;
-        }
     }
 
     @Override
@@ -68,12 +62,10 @@ public abstract class BoxHudEntry extends AbstractHudEntry {
     public void render(AxoRenderContext ctx, float delta) {
         ctx.br$pushMatrix();
         scale(ctx);
-
         if (backgroundAllowed && background.get()) {
             int opacity = ItzClient.config().hudBackgroundOpacity.get();
             Color finalBackgroundColor = backgroundColor.get().withAlpha(opacity);
             int cornerRadius = ItzClient.config().hudCornerRadius.get();
-
             if (finalBackgroundColor.getAlpha() > 0) {
                 Rectangle bounds = getBounds();
                 if (cornerRadius > 0) {
@@ -82,12 +74,10 @@ public abstract class BoxHudEntry extends AbstractHudEntry {
                     ctx.br$fillRect(bounds, finalBackgroundColor);
                 }
             }
-
             if (outline.get() && outlineColor.get().getAlpha() > 0) {
                 ctx.br$outlineRect(getBounds(), outlineColor.get());
             }
         }
-        
         renderComponent(ctx, delta);
         ctx.br$popMatrix();
     }
