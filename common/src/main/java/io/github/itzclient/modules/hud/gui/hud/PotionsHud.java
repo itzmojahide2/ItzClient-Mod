@@ -45,7 +45,6 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 
     public static final AxoIdentifier ID = AxoIdentifier.of("itzclient", "potionshud");
 
-    // --- Settings for this module ---
     private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint();
     private final EnumOption<CardinalOrder> order = DefaultOptions.getCardinalOrder(CardinalOrder.TOP_DOWN);
     private final BooleanOption iconsOnly = new BooleanOption("iconsonly", false);
@@ -64,40 +63,31 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
     }
 
     @Override
-    public void renderComponent(AxoRenderContext context, float delta) {
-        if (client.br$getPlayer() == null) {
+    public void renderComponent(AxoRenderContext graphics, float delta) {
+        if(client.br$getPlayer() == null) {
             return;
         }
-        renderEffects(context, client.br$getPlayer().br$getStatusEffects());
+        renderEffects(graphics, client.br$getPlayer().br$getStatusEffects());
     }
 
     private void renderEffects(AxoRenderContext graphics, List<AxoStatusEffectInstance> effects) {
         boolean noEffects = effects.isEmpty();
-        
-        // Dynamically calculate the required size of the HUD
-        int calcWidth = noEffects ? 50 : calculateWidth(effects);
-        int calcHeight = noEffects ? 20 : calculateHeight(effects);
-        
-        if (calcWidth != getWidth() || calcHeight != getHeight()) {
-            setWidth(calcWidth);
-            setHeight(calcHeight);
-            onBoundsUpdate();
-        }
-        
-        if (noEffects) {
-            return;
-        }
+        int calcWidth = noEffects ? 0 : calculateWidth(effects);
+        int calcHeight = noEffects ? 0 : calculateHeight(effects);
+        boolean changed = false;
+        if (calcWidth != getWidth()) { setWidth(calcWidth); changed = true; }
+        if (calcHeight != getHeight()) { setHeight(calcHeight); changed = true; }
+        if (changed) { onBoundsUpdate(); }
+        if (noEffects) { return; }
 
         int lastPos = 0;
         CardinalOrder direction = order.get();
         Rectangle bounds = getBounds();
         int x = bounds.x();
         int y = bounds.y();
-
         for (int i = 0; i < effects.size(); i++) {
-            AxoStatusEffectInstance effect = effects.get(direction.getDirection() == -1 ? i : effects.size() - i - 1);
-            
-            if (direction.isXAxis()) { // Horizontal layout
+            final var effect = effects.get(direction.getDirection() == -1 ? i : effects.size() - i - 1);
+            if (direction.isXAxis()) {
                 renderPotion(graphics, effect, x + lastPos + 1, y + 1);
                 int nameWidth = 0;
                 if (!iconsOnly.get()) {
@@ -107,7 +97,7 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
                     }
                 }
                 lastPos += 20 + nameWidth;
-            } else { // Vertical layout
+            } else {
                 renderPotion(graphics, effect, x + 1, y + 1 + lastPos);
                 lastPos += 20;
             }
@@ -115,34 +105,21 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
     }
 
     private int calculateWidth(List<AxoStatusEffectInstance> effects) {
-        if (order.get().isXAxis()) { // Horizontal
+        final var widthStreamFullName = effects.stream().map(PotionsHud::formatNameAndAmplifier).mapToInt(client.br$getFont()::br$getWidth);
+        final var widthStreamDuration = effects.stream().map(AxoStatusEffectInstance::br$formatDuration).mapToInt(client.br$getFont()::br$getWidth);
+        if (order.get().isXAxis()) {
             if (iconsOnly.get()) return 20 * effects.size() + 2;
-            int totalWidth = effects.stream().mapToInt(effect -> {
-                int iconWidth = 20;
-                int textWidth = 0;
-                if (!iconsOnly.get()) {
-                    textWidth = client.br$getFont().br$getWidth(effect.br$formatDuration());
-                    if (showEffectName.get()) {
-                        textWidth = Math.max(textWidth, client.br$getFont().br$getWidth(formatNameAndAmplifier(effect)));
-                    }
-                }
-                return iconWidth + textWidth;
-            }).sum();
-            return totalWidth + 2;
-        } else { // Vertical
+            if (!showEffectName.get()) return widthStreamDuration.map(i -> i + 20).sum() + 3;
+            return widthStreamFullName.map(i -> i + 20).sum() + 2;
+        } else {
             if (iconsOnly.get()) return 20;
-            int maxTextWidth = effects.stream().mapToInt(effect -> {
-                if (showEffectName.get()) {
-                    return client.br$getFont().br$getWidth(formatNameAndAmplifier(effect));
-                }
-                return client.br$getFont().br$getWidth(effect.br$formatDuration());
-            }).max().orElse(0);
-            return 22 + maxTextWidth;
+            if (!showEffectName.get()) return widthStreamDuration.max().orElse(0) + 22;
+            return widthStreamFullName.max().orElse(0) + 22;
         }
     }
 
     private int calculateHeight(List<AxoStatusEffectInstance> effects) {
-        return order.get().isXAxis() ? 20 : 20 * effects.size() + 2;
+        return (order.get()).isXAxis() ? 20 : 20 * effects.size() + 2;
     }
 
     private void renderPotion(AxoRenderContext graphics, AxoStatusEffectInstance effect, int x, int y) {
@@ -185,6 +162,6 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 
     @Override
     public AnchorPoint getAnchor() {
-        return anchor.get();
+        return (anchor.get());
     }
 }
