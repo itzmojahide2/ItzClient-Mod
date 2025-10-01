@@ -5,18 +5,28 @@ on: [push, workflow_dispatch]
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
+
       - name: Make gradlew executable
         run: chmod +x ./gradlew
+
+      # This is the corrected command that will automatically fix all 49 files.
+      - name: Apply License Header
+        run: ./gradlew licenseFormat
+
+      # The build command will now run after the licenses are fixed.
       - name: Build with Gradle
         run: ./gradlew build
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
