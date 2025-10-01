@@ -19,11 +19,11 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      # This new step automatically adds the license header to all your Java files.
+      # This is the corrected command to automatically apply the license header.
       - name: Apply License Header
-        run: ./gradlew licenseMain
+        run: ./gradlew licenseFormatMain
 
-      # The original build step now runs after the licenses have been fixed.
+      # The build step will run after the licenses are fixed.
       - name: Build with Gradle
         run: ./gradlew build
 
