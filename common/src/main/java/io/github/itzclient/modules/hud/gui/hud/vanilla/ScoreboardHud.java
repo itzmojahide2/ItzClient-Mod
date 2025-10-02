@@ -11,7 +11,7 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * Lesser General Public License for more details
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software Foundation,
@@ -36,18 +36,14 @@ import io.github.itzclient.bridge.util.AxoIdentifier;
 import io.github.itzclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.itzclient.modules.hud.gui.entry.TextHudEntry;
 import io.github.itzclient.modules.hud.gui.layout.AnchorPoint;
-import io.github.itzclient.modules.hud.util.DrawPosition;
-import io.github.itzclient.util.ClientColors;
+import io.github.itzclient.modules.hud.util.DrawUtil;
+import io.github.itzclient.modules.hud.util.Rectangle;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.scoreboard.Scoreboard;
-import net.minecraft.scoreboard.ScoreboardCriterion;
-import net.minecraft.scoreboard.ScoreboardDisplaySlot;
-import net.minecraft.scoreboard.ScoreboardObjective;
-import net.minecraft.scoreboard.Team;
+import net.minecraft.client.util.ColorUtil;
+import net.minecraft.scoreboard.*;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -56,7 +52,6 @@ public class ScoreboardHud extends TextHudEntry implements DynamicallyPositionab
 
     public static final AxoIdentifier ID = AxoIdentifier.of("itzclient", "scoreboardhud");
     
-    // Create a static placeholder scoreboard for the HUD editor
     private static final ScoreboardObjective PLACEHOLDER = Util.make(() -> {
         Scoreboard board = new Scoreboard();
         ScoreboardObjective obj = board.addObjective("placeholder", ScoreboardCriterion.DUMMY, Text.literal("§e§lITZCLIENT"), ScoreboardCriterion.RenderType.INTEGER);
@@ -67,7 +62,6 @@ public class ScoreboardHud extends TextHudEntry implements DynamicallyPositionab
         return obj;
     });
 
-    // --- Settings for this module ---
     private final ColorOption topColor = new ColorOption("topbackgroundcolor", new Color(0x66000000));
     private final IntegerOption topPadding = new IntegerOption("toppadding", 0, 0, 4);
     private final BooleanOption showScores = new BooleanOption("scores", true);
@@ -87,9 +81,7 @@ public class ScoreboardHud extends TextHudEntry implements DynamicallyPositionab
         }
         Scoreboard scoreboard = client.br$getWorld().getScoreboard();
         ScoreboardObjective objective = scoreboard.getObjectiveForSlot(ScoreboardDisplaySlot.SIDEBAR);
-        
         if (objective != null) {
-            // Cancel the vanilla scoreboard from rendering
             Events.SCOREBOARD_RENDER_EVENT.invoker().accept(new ScoreboardRenderEvent(objective, true));
             renderScoreboardSidebar(context, objective);
         }
@@ -100,12 +92,11 @@ public class ScoreboardHud extends TextHudEntry implements DynamicallyPositionab
         renderScoreboardSidebar(context, PLACEHOLDER);
     }
 
-    private void renderScoreboardSidebar(AxoRenderContext context, ScoreboardObjective objective) {
+    private void renderScoreboardSidebar(AxoRenderContext graphics, ScoreboardObjective objective) {
         TextRenderer font = client.br$getFont();
         Scoreboard scoreboard = objective.getScoreboard();
-
-        Collection<AxoScoreboardScore> scores = scoreboard.br$getScores(objective);
-        List<AxoScoreboardScore> filteredScores = scores.stream()
+        
+        List<AxoScoreboardScore> filteredScores = scoreboard.br$getScores(objective).stream()
             .filter(score -> !score.br$isHidden())
             .sorted(Comparator.comparingInt(AxoScoreboardScore::br$getScore))
             .limit(15L)
@@ -119,10 +110,7 @@ public class ScoreboardHud extends TextHudEntry implements DynamicallyPositionab
             AxoTeam team = scoreboard.br$getTeam(score.br$getOwner());
             String name = AxoTeam.br$getMemberDisplayName(team, score.br$getOwner());
             String scoreText = " " + score.br$getScore();
-            int lineWidth = font.br$getWidth(name);
-            if (showScores.get()) {
-                lineWidth += font.br$getWidth(scoreText);
-            }
+            int lineWidth = font.br$getWidth(name) + (showScores.get() ? font.br$getWidth(scoreText) : 0);
             maxWidth = Math.max(maxWidth, lineWidth);
         }
 
@@ -135,23 +123,19 @@ public class ScoreboardHud extends TextHudEntry implements DynamicallyPositionab
             onBoundsUpdate();
         }
 
-        DrawPosition pos = getPos();
-        int xStart = pos.x() + 2;
-        int yStart = pos.y() + 2;
-        int xEnd = pos.x() + getWidth() - 2;
-
-        // Draw title
-        context.br$drawCenteredString(title, pos.x() + getWidth() / 2, yStart + topPadding.get(), textColor.get().toInt(), shadow.get());
+        Rectangle bounds = getBounds();
+        int titleY = bounds.y() + 2 + topPadding.get();
+        graphics.br$drawCenteredString(title, bounds.x() + bounds.width() / 2, titleY, textColor.get().toInt(), shadow.get());
         
-        // Draw scores
-        int y = yStart + font.br$getFontHeight() + 2 + topPadding.get() * 2;
-        for (AxoScoreboardScore score : filteredScores) {
+        int y = titleY + font.br$getFontHeight() + 2 + topPadding.get();
+        for (int i = filteredScores.size() - 1; i >= 0; i--) {
+            AxoScoreboardScore score = filteredScores.get(i);
             AxoTeam team = scoreboard.br$getTeam(score.br$getOwner());
             String name = AxoTeam.br$getMemberDisplayName(team, score.br$getOwner());
-            context.br$drawString(name, xStart, y, textColor.get().toInt(), shadow.get());
+            graphics.br$drawString(name, bounds.x() + 2, y, textColor.get().toInt(), shadow.get());
             if (showScores.get()) {
                 String scoreText = "" + score.br$getScore();
-                context.br$drawString(scoreText, xEnd - font.br$getWidth(scoreText), y, scoreColor.get().toInt(), shadow.get());
+                graphics.br$drawString(scoreText, bounds.x() + bounds.width() - 2 - font.br$getWidth(scoreText), y, scoreColor.get().toInt(), shadow.get());
             }
             y += font.br$getFontHeight();
         }
