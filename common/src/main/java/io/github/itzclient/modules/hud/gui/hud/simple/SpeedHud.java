@@ -21,13 +21,14 @@
  */
 package io.github.itzclient.modules.hud.gui.hud.simple;
 
-import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
-import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
+import io.github.itzclient.AxolotlClientConfig.api.options.Option;
+import io.github.itzclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.itzclient.bridge.entity.AxoEntity;
 import io.github.itzclient.bridge.entity.AxoPlayer;
 import io.github.itzclient.bridge.math.Vec3;
 import io.github.itzclient.bridge.util.AxoIdentifier;
 import io.github.itzclient.modules.hud.gui.entry.SimpleTextHudEntry;
+
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
@@ -42,11 +43,21 @@ public class SpeedHud extends SimpleTextHudEntry {
     private int tickCounter = 0;
 
     @Override
-    public AxoIdentifier getId() { return ID; }
+    public AxoIdentifier getId() {
+        return ID;
+    }
+
     @Override
-    public List<Option<?>> getConfigurationOptions() { List<Option<?>> o = super.getConfigurationOptions(); o.add(horizontal); return o; }
+    public List<Option<?>> getConfigurationOptions() {
+        List<Option<?>> options = super.getConfigurationOptions();
+        options.add(horizontal);
+        return options;
+    }
+
     @Override
-    public boolean tickable() { return true; }
+    public boolean tickable() {
+        return true;
+    }
 
     @Override
     public void tick() {
@@ -54,7 +65,10 @@ public class SpeedHud extends SimpleTextHudEntry {
         if (tickCounter >= 4) {
             tickCounter = 0;
             AxoPlayer player = client.br$getPlayer();
-            if (player == null) { this.speedString = getPlaceholder(); return; }
+            if (player == null) {
+                this.speedString = getPlaceholder();
+                return;
+            }
             AxoEntity entity = Objects.requireNonNullElse(player.br$getVehicle(), player);
             Vec3 vec = entity.br$getVelocity();
             if (horizontal.get() || (entity.br$isOnGround() && vec.y() < 0)) {
@@ -65,7 +79,12 @@ public class SpeedHud extends SimpleTextHudEntry {
     }
 
     @Override
-    public String getValue() { return this.speedString; }
+    public String getValue() {
+        return this.speedString;
+    }
+
     @Override
-    public String getPlaceholder() { return "4.35 BPS"; }
+    public String getPlaceholder() {
+        return "4.35 BPS";
+    }
 }
