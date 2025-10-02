@@ -30,47 +30,35 @@ import java.text.NumberFormat;
 
 public class TPSHud extends SimpleTextHudEntry {
 
-    public static final AxoIdentifier ID = AxoIdentifier.of("itzclient", "tpshud");
-    private static final NumberFormat FORMATTER = new DecimalFormat("#0.00");
-    
-    // --- Caching variables for calculation ---
-    private long lastTickTime = -1;
-    private long lastUpdateTime = -1;
+    public final static AxoIdentifier ID = AxoIdentifier.of("itzclient", "tpshud");
+    private final static NumberFormat FORMATTER = new DecimalFormat("#0.00");
+    private long lastTick = -1;
+    private long lastUpdate = -1;
     private double tps = -1;
-    private String tpsString = "20.00 TPS"; // Default display value
+    private String tpsString = "20.00 TPS";
 
     @Override
     public void init() {
-        // Listen to the server's time update packets
         Events.UPDATE_TIME.register(ticks -> {
-            if (lastTickTime < 0) {
-                lastTickTime = ticks;
-                lastUpdateTime = System.nanoTime();
+            if (lastTick < 0) {
+                lastTick = ticks;
+                lastUpdate = System.nanoTime();
                 return;
             }
-
-            long currentTime = System.nanoTime();
-            // Time elapsed in milliseconds
-            double elapsedMillis = (currentTime - lastUpdateTime) / 1.0E6;
-            // Ticks passed since last update
-            int passedTicks = (int) (ticks - lastTickTime);
-            
+            long time = System.nanoTime();
+            double elapsedMilli = (time - lastUpdate) / 1000000d;
+            int passedTicks = (int) (ticks - lastTick);
             if (passedTicks > 0) {
-                // Calculate Milliseconds Per Tick (MSPT)
-                double mspt = elapsedMillis / passedTicks;
-                // Calculate TPS (capped at 20.0)
-                tps = Math.min(1000.0 / mspt, 20.0);
+                double mspt = elapsedMilli / passedTicks;
+                tps = Math.min(1000 / mspt, 20);
                 tpsString = FORMATTER.format(tps) + " TPS";
             }
-
-            lastTickTime = ticks;
-            lastUpdateTime = currentTime;
+            lastTick = ticks;
+            lastUpdate = time;
         });
-        
-        // Reset TPS when disconnecting from a world
         Events.DISCONNECT.register(() -> {
-            lastTickTime = -1;
-            lastUpdateTime = -1;
+            lastTick = -1;
+            lastUpdate = -1;
             tps = -1;
             tpsString = "20.00 TPS";
         });
@@ -84,7 +72,7 @@ public class TPSHud extends SimpleTextHudEntry {
     @Override
     public String getValue() {
         if (client.br$isLocalServer()) {
-            return "20.00 TPS (SP)"; // Singleplayer always runs at 20 TPS
+            return "20.00 TPS (SP)";
         }
         return tpsString;
     }
