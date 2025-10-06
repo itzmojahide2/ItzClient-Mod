@@ -40,10 +40,13 @@ import net.minecraft.client.texture.NativeImageBackedTexture;
 import java.util.ArrayList;
 import java.util.List;
 
-// This class correctly extends the simplified common config.
+/**
+ * This is the version-specific configuration class for 1.21.
+ * It extends the common config and adds all the options that depend on Minecraft's code.
+ */
 public class ItzClientConfig extends ItzClientConfigCommon {
 
-    // --- All Minecraft-specific options are defined here ---
+    // --- All Minecraft-specific options are now defined here ---
     public final BooleanOption showOwnNametag = new BooleanOption("showOwnNametag", false);
     public final BooleanOption useShadows = new BooleanOption("useShadows", false);
     public final BooleanOption nametagBackground = new BooleanOption("nametagBackground", true);
@@ -56,7 +59,7 @@ public class ItzClientConfig extends ItzClientConfigCommon {
     public final ForceableBooleanOption lowFire = new ForceableBooleanOption("lowFire", false);
     public final BooleanOption lowShield = new BooleanOption("lowShield", false);
     public final ColorOption hitColor = new ColorOption("hitColor", new Color(255, 0, 0, 77), value -> {
-        // This code is now in the correct module and will compile.
+        // This code, which caused the error, is now in the correct module and will compile.
         try {
             NativeImageBackedTexture texture = ((OverlayTextureAccessor) MinecraftClient.getInstance().gameRenderer.getOverlayTexture()).axolotlclient$getTexture();
             NativeImage nativeImage = texture.getImage();
@@ -94,14 +97,16 @@ public class ItzClientConfig extends ItzClientConfigCommon {
     private final List<Option<?>> options = new ArrayList<>();
 
     public ItzClientConfig() {
-        super(); // Call the constructor of the parent class.
+        super(); // This calls the constructor of ItzClientConfigCommon
 
+        // Add all the categories to the main 'config' category from the common class.
         config.add(general);
         config.add(rendering);
         config.add(hudSettings);
         rendering.add(outlines);
         rendering.add(timeChanger);
 
+        // Add all the options to their respective categories.
         general.add(showBrandingWatermark);
         general.add(new GenericOption("profiles.title", "profiles.configure", () -> MinecraftClient.getInstance().setScreen(new ProfilesScreen(MinecraftClient.getInstance().currentScreen))), false);
         
@@ -116,6 +121,7 @@ public class ItzClientConfig extends ItzClientConfigCommon {
         outlines.add(new BooleanOption("enabled", false));
         outlines.add(new ColorOption("color", Color.parse("#DD000000")));
         
+        // Register keybinds, which depend on Minecraft code.
         var toggleFullbright = new KeyBind("toggle_fullbright", -1, "category.itzclient");
         KeyBinds.getInstance().registerWithSimpleAction(toggleFullbright, fullBright::toggle);
     }
