@@ -23,12 +23,10 @@ package io.github.itzclient.config;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.texture.NativeImage;
-import io.github.itzclient.ItzClientCommon;
-import io.github.itzclient.AxolotlClientConfig.api.options.Option;
-import io.github.itzclient.AxolotlClientConfig.api.options.OptionCategory;
-import io.github.itzclient.AxolotlClientConfig.api.util.Color;
-import io.github.itzclient.AxolotlClientConfig.impl.options.*;
-import io.github.itzclient.config.screen.CreditsScreen;
+import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
+import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
+import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.*;
 import io.github.itzclient.config.screen.ProfilesScreen;
 import io.github.itzclient.mixin.OverlayTextureAccessor;
 import io.github.itzclient.util.keybinds.KeyBinds;
@@ -42,9 +40,10 @@ import net.minecraft.client.texture.NativeImageBackedTexture;
 import java.util.ArrayList;
 import java.util.List;
 
+// This class correctly extends the simplified common config.
 public class ItzClientConfig extends ItzClientConfigCommon {
 
-    // --- Options ---
+    // --- All Minecraft-specific options are defined here ---
     public final BooleanOption showOwnNametag = new BooleanOption("showOwnNametag", false);
     public final BooleanOption useShadows = new BooleanOption("useShadows", false);
     public final BooleanOption nametagBackground = new BooleanOption("nametagBackground", true);
@@ -57,6 +56,7 @@ public class ItzClientConfig extends ItzClientConfigCommon {
     public final ForceableBooleanOption lowFire = new ForceableBooleanOption("lowFire", false);
     public final BooleanOption lowShield = new BooleanOption("lowShield", false);
     public final ColorOption hitColor = new ColorOption("hitColor", new Color(255, 0, 0, 77), value -> {
+        // This code is now in the correct module and will compile.
         try {
             NativeImageBackedTexture texture = ((OverlayTextureAccessor) MinecraftClient.getInstance().gameRenderer.getOverlayTexture()).axolotlclient$getTexture();
             NativeImage nativeImage = texture.getImage();
@@ -94,6 +94,8 @@ public class ItzClientConfig extends ItzClientConfigCommon {
     private final List<Option<?>> options = new ArrayList<>();
 
     public ItzClientConfig() {
+        super(); // Call the constructor of the parent class.
+
         config.add(general);
         config.add(rendering);
         config.add(hudSettings);
@@ -117,4 +119,4 @@ public class ItzClientConfig extends ItzClientConfigCommon {
         var toggleFullbright = new KeyBind("toggle_fullbright", -1, "category.itzclient");
         KeyBinds.getInstance().registerWithSimpleAction(toggleFullbright, fullBright::toggle);
     }
-  }
+}
